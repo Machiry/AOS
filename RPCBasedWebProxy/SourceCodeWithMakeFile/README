@@ -1,0 +1,49 @@
+1) Building:
+	Browse to the required source directory and do: make -f Makefile.proxy all
+
+2) Using the proxy server:
+	 Build the sources on both client and server machine as mentioned in step1.
+	 On server machine do:
+		sudo ./proxy_server
+         	Say the server is running on address: 143.215.204.191
+	Server has following behavior:
+		When cache is enabled (default):
+			Servers needs single time initialization for which it expects an initial initialization string of the form:
+				When cache size is number of urls: init,<UserString>,1-5
+					Where numbers 1-5 represent the replacement policy.
+					1:LRU,2:LFU,3:FIFO,4:RAND,5:MAXS
+					Ex: ./proxy_client 143.215.204.191 init,Test1,1
+						The above RPC call initializes the server for LRU replacement policy.
+				When cache size is total memory: init,userString,MaxCacheSizeInBytes,1-5
+					where MaxCacheSizeInBytes is the Maximum cache size in bytes and the rest all fields have same meaning as above
+					Ex: ./proxy_client 143.215.204.191 init,Test2,4096,2
+						The above RPC call initializes the server for LFU replacement policy with 4KB cache size.
+		
+			Changing the cache size:
+				When cache size is number of urls:
+					edit: proxy_data.h 
+					change : MAXSIZE_CACHE to the required value
+					(rebuild the sources for this to be in effect)
+				When cache size is total memory:
+					Use the appropriate size during initialization.
+					This also requires maximum urls to be set which can be set by editing MAXSIZE_CACHE in proxy_data.h
+	
+			After initialization: you can send urls to be fetched.
+				Ex:./proxy_client 143.215.204.191 http://www.google.com
+			When done send "exit" command to the server which results in server flushing the logs and getting terminated itself.
+				Ex: ./proxy_client 143.215.204.191 exit
+	
+		Disabling the cache:
+			You can disable the cache by uncommenting the line : #define NOCACHE in proxy_server.c.
+
+		When cache is disabled:
+			you can just issue the url request.
+			Ex: ./proxy_client 143.215.204.191 http://www.google.com
+
+			Note: when cache is disabled, server needs to be terminated manually.
+
+
+Note: for any changes you make to the source files, you need to rebuild for the new changes to be in the binaries.
+			
+				
+
