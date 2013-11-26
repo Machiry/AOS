@@ -15,9 +15,9 @@ extern "C" {
     typedef unsigned long gtthread_mutex_t;
     typedef unsigned long ulong;
     typedef unsigned long thr_priority;
-#define MAX_PRIORITY 0
-#define MIN_THR_PRIORITY 9
-#define MIN_PRIORITY MIN_THR_PRIORITY+1
+#define MAX_PRIORITY (0)
+#define MIN_THR_PRIORITY (9)
+#define MIN_PRIORITY (MIN_THR_PRIORITY+1)
 
     typedef struct POINTERLISTNODE {
         void* curr;

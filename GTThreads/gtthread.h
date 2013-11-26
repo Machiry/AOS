@@ -25,6 +25,7 @@ void gtthread_yield(void);
 int  gtthread_equal(gtthread_t t1, gtthread_t t2);
 int  gtthread_cancel(gtthread_t thread);
 gtthread_t gtthread_self(void);
+thr_priority gtthread_getpriority(gtthread_t t1);
 
 //Synchronization Constructs.
 int  gtthread_mutex_init(gtthread_mutex_t *mutex);

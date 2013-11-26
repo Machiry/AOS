@@ -625,6 +625,21 @@ void gtthread_yield(void) {
 
 }
 
+thr_priority gtthread_getpriority(gtthread_t t1){
+    thr_priority retVal = -1;
+    if (isInitialized && currSchedulerType == PRIORITY) {
+        sigset_t oldMask;
+        sigprocmask(SIG_BLOCK, &ourSignals, &oldMask);
+        //1.find the corresponding TCBNODE
+        TCBNODE* targetTCBN = getTargetTCBNode(t1);
+        if (targetTCBN) {
+            retVal = targetTCBN->currThreadPriority;
+        }
+        sigprocmask(SIG_UNBLOCK, &ourSignals, NULL);
+    }
+    return retVal;
+}
+
 int gtthread_equal(gtthread_t t1, gtthread_t t2) {
     int retVal = 0;
     if (isInitialized) {

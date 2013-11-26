@@ -55,7 +55,7 @@ void thread3(void *dummy1){
     long dummy = ~(-1);
     gtthread_t th1;
     int i=0;
-    printf("Thread3,running\n");
+    printf("Thread3,running with priority:%d\n",gtthread_getpriority(gtthread_self()));
     for(i=0;i<10;i++){
         printf("Thread3:%d, still running\n",i);
     dummy = ~(-1);
@@ -70,7 +70,7 @@ void thread2(void *dummy1){
     gtthread_t th1;
     long dummy2;
     int i=0;
-    printf("Thread2,running\n");
+    printf("Thread2,running with priority:%d\n",gtthread_getpriority(gtthread_self()));
     for(i=0;i<10;i++){
         printf("Thread2, still running\n");
     dummy = ~(-1);
@@ -78,7 +78,7 @@ void thread2(void *dummy1){
         dummy--;
     }
     if(i==1){
-        printf("Trying to create thread3\n");
+        printf("Trying to create thread3 with priority:%d\n",2);
         gtthread_create(&th1,thread3,&i,2);
         dummy = ~(-1);
         while(dummy>0){
@@ -90,6 +90,7 @@ void thread2(void *dummy1){
         }
     }
     }
+    printf("Thread2 waiting for thread3\n");
     gtthread_join(th1,NULL);
     printf("Thread2 Exiting\n");
 }
@@ -98,7 +99,7 @@ void* thread1(void *dummy1){
     long dummy2;
     gtthread_t th1;
     int i=0;
-    printf("Thread1,running\n");
+    printf("Thread1,running with priority:%d\n",gtthread_getpriority(gtthread_self()));
     for(i=0;i<10;i++){
         printf("Thread1, still running\n");
     dummy = ~(-1);
@@ -106,7 +107,7 @@ void* thread1(void *dummy1){
         dummy--;
     }
     if(i==1){
-        printf("Trying to create thread2\n");
+        printf("Trying to create thread2 with priority:%d\n",4);
         gtthread_create(&th1,thread2,&i,4);
         dummy = ~(-1);
         while(dummy>0){
@@ -118,6 +119,7 @@ void* thread1(void *dummy1){
         }
     }
     }
+    printf("Thread1 waiting for thread2\n");
     gtthread_join(th1,NULL);
     printf("Thread1 Exiting\n");
 }
@@ -143,7 +145,7 @@ void main(){
     long dummy1;
     gtthread_t th1;
     int i=0;
-    printf("Main thread,running\n");
+    printf("Main thread,running with priority:%d\n",gtthread_getpriority(gtthread_self()));
     for(i=0;i<3;i++){
         printf("Main thread, still running\n");
     dummy = ~(-1);
@@ -151,7 +153,7 @@ void main(){
         dummy--;
     }
     if(i==1){
-        printf("Trying to create thread1\n");
+        printf("Trying to create thread1 with priority:%d\n",4);
         gtthread_create(&th1,thread1,&i,4);
         dummy = ~(-1);
         while(dummy>0){

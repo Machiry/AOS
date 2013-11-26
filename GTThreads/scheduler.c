@@ -15,17 +15,20 @@ static TCBNODE* getNextTCBToSchedule() {
     int i = 0;
     TCBNODE* toRetTCB = NULL;
     if (currSchedulerType == PRIORITY) {
-        for (i = 0; i < MIN_PRIORITY && !toRetTCB; i++) {
+        for (i = 0; i < ((currentTCB && !currentTCB->isBlocked && !currentTCB->isCompleted)?(currentTCB->currThreadPriority+1):MIN_PRIORITY) && !toRetTCB; i++) {
             if (readyQueue[i]) {
-                TCBNODE* currTCB = readyQueue[i];
-                TCBNODE* prevTCB = readyQueue[i]->next;
+                TCBNODE* prevTCB = readyQueue[i];
+                TCBNODE* currTCB = readyQueue[i]->next;
                 //Case when ready queue has only one TCB
                 if(prevTCB == currTCB && currTCB != currentTCB){
                     toRetTCB = currTCB;
                     break;
                 }
+                prevTCB = NULL;
                 while (currTCB && currTCB != prevTCB) {
-                    prevTCB = currTCB;
+                    if(!prevTCB){
+                        prevTCB = currTCB;
+                    }
                     TCBNODE* nextTCB = currTCB->next;
                     if (!currTCB->isBlocked) {
                         if (currTCB->isCompleted) {
@@ -70,7 +73,15 @@ void scheduler(int sig) {
     //setitimer(timerType, &zeroTime, null);
     //sigprocmask(SIG_BLOCK, &ourSignals,NULL);
     TCBNODE* nextToSchedule = getNextTCBToSchedule();
-    if (currentTCB->isCompleted) {
+    if(!currentTCB){
+        if(nextToSchedule){
+            setitimer(timerType, &originalTime, null);
+            sigprocmask(SIG_UNBLOCK, &ourSignals, NULL);
+            currentTCB = nextToSchedule;
+            setcontext(nextToSchedule->threadContext);
+        }
+    }
+    else if (currentTCB->isCompleted) {
         //Here we need to set context.
         freeReadyListNode(currentTCB);
         setitimer(timerType, &originalTime, null);
